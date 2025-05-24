@@ -1,0 +1,3 @@
+﻿<Solution>
+  <Project Path="Logdash\Logdash.csproj" Type="Classic C#" />
+</Solution>
