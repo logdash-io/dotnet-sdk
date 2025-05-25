@@ -15,7 +15,7 @@ public static class LogdashExtensions
         serviceCollection.AddHttpClient<ILogdash, Logdash>(x =>
         {
             x.BaseAddress = new Uri(requiredParams.Host!);
-            x.DefaultRequestHeaders.Add("project-api-key", $"{requiredParams.ApiKey}");
+            x.DefaultRequestHeaders.Add("project-api-key", requiredParams.ApiKey);
         });
 
         return serviceCollection;
