@@ -4,6 +4,19 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <VersionPrefix>0.0.1</VersionPrefix>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>Logdash</PackageId>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/logdash-io/dotnet-sdk</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/logdash-io/dotnet-sdk</RepositoryUrl>
+        <Authors>JakubK</Authors>
+        <RepositoryType>git</RepositoryType>
+        <Description>Simple .NET Client for Logdash</Description>
     </PropertyGroup>
 
     <ItemGroup>
