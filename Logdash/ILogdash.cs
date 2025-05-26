@@ -4,8 +4,8 @@ namespace Logdash;
 
 public interface ILogdash
 {
-    Task SetMetricAsync(string key, double value);
-    Task MutateMetricAsync(string key, string value);
+    void SetMetric(string key, double value);
+    void MutateMetric(string key, double value);
 
-    Task LogAsync(LogLevel level, params object[] data);
+    void Log(LogLevel level, params object[] data);
 }

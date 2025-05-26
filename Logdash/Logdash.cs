@@ -7,7 +7,7 @@ namespace Logdash;
 
 public class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash
 {
-    public async Task SetMetricAsync(string key, double value)
+    public void SetMetric(string key, double value)
     {
         if (initializationParams.Verbose)
         {
@@ -16,10 +16,11 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         
         var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Set), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        await httpClient.PutAsync("/metrics", content);
+        
+        Task.Run(async () => await httpClient.PutAsync("/metrics", content));
     }
 
-    public async Task MutateMetricAsync(string key, string value)
+    public void MutateMetric(string key, double value)
     {
         if (initializationParams.Verbose)
         {
@@ -28,10 +29,11 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         
         var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Change), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        await httpClient.PutAsync("/metrics", content);
+
+        Task.Run(async () => await httpClient.PutAsync("/metrics", content));
     }
 
-    public async Task LogAsync(LogLevel level, params object[] data)
+    public void Log(LogLevel level, params object[] data)
     {
         var formattedItems = new List<string>();
         foreach (var item in data)
@@ -58,6 +60,10 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         
         var json = JsonSerializer.Serialize(new LogRequest(dataString, level, DateTime.UtcNow.ToString("o")), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        await httpClient.PostAsync("/logs", content);
+        
+        Task.Run(async () =>
+        {
+            await httpClient.PostAsync("/logs", content);
+        });
     }
 }

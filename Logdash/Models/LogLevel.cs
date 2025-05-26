@@ -1,10 +1,13 @@
-﻿namespace Logdash.Models;
+﻿using System.Text.Json.Serialization;
+using Logdash.Converters;
 
-public sealed class LogLevel
+namespace Logdash.Models;
+
+[JsonConverter(typeof(LogLevelConverter))]
+public sealed class LogLevel(string value)
 {
-    private string Value { get; }
-    public LogLevel(string value) => Value = value;
-    
+    private string Value { get; } = value;
+
     public override string ToString() => Value;
     
     public static readonly LogLevel Error = new("error");

@@ -1,4 +1,5 @@
-﻿using Logdash.Models;
+﻿using Logdash.Constants;
+using Logdash.Models;
 
 namespace Logdash;
 
@@ -12,7 +13,7 @@ public class LogdashBuilder
         _httpClient = httpClient;
         if (_initializationParams != null)
         {
-            _httpClient.BaseAddress = new Uri(_initializationParams.Host ?? "https://api.logdash.io");
+            _httpClient.BaseAddress = new Uri(_initializationParams.Host ?? LogdashConstants.LogdashApiUrl);
             _httpClient.DefaultRequestHeaders.Add("project-api-key", _initializationParams.ApiKey);
         }
         
@@ -26,7 +27,7 @@ public class LogdashBuilder
         {
             if (_httpClient != null)
             {
-                _httpClient.BaseAddress = new Uri(_initializationParams.Host ?? "https://api.logdash.io");
+                _httpClient.BaseAddress = new Uri(_initializationParams.Host ?? LogdashConstants.LogdashApiUrl);
                 _httpClient?.DefaultRequestHeaders.Add("project-api-key", _initializationParams.ApiKey);
             }
         }

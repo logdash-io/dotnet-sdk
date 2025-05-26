@@ -1,10 +1,13 @@
-﻿namespace Logdash.Models;
+﻿using System.Text.Json.Serialization;
+using Logdash.Converters;
 
-public sealed class MetricOperation
+namespace Logdash.Models;
+
+[JsonConverter(typeof(MetricOperationConverter))]
+public sealed class MetricOperation(string value)
 {
-    private string Value { get; }
-    public MetricOperation(string value) => Value = value;
-    
+    private string Value { get; } = value;
+
     public override string ToString() => Value;
     
     public static readonly MetricOperation Set = new("set");

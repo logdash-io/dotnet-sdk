@@ -10,7 +10,6 @@
 
     <PropertyGroup>
         <PackageId>Logdash</PackageId>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/logdash-io/dotnet-sdk</PackageProjectUrl>
         <RepositoryUrl>https://github.com/logdash-io/dotnet-sdk</RepositoryUrl>
