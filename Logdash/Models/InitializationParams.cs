@@ -1,3 +1,5 @@
-﻿namespace Logdash.Models;
+﻿using Logdash.Constants;
 
-public record InitializationParams(string? ApiKey, string? Host = "https://api.logdash.io", bool Verbose = false);
+namespace Logdash.Models;
+
+public record InitializationParams(string? ApiKey, string? Host = LogdashConstants.LogdashApiUrl, bool Verbose = LogdashConstants.DefaultVerbose);
