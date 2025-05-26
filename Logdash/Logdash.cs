@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Logdash.Constants;
+using Logdash.Extensions;
 using Logdash.Models;
 using Logdash.Requests;
 
@@ -59,9 +61,17 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         }
 
         var dataString = string.Join(" ", formattedItems);
-        
-        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, DateTime.UtcNow.ToString("o"), _sequenceNumber++), JsonSerializerOptions.Web);
+
+        var createdAt = DateTime.UtcNow.ToString("o");
+        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, createdAt , _sequenceNumber++), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var (r,g,b) = LogdashConstants.LogColorMap[level];
+        var datePrefix = createdAt.WithColor(156, 156, 156);
+        var coloredLevel = level.ToString().ToUpper().WithColor(r, g, b);
+
+        var formattedMessage = $"{datePrefix} {coloredLevel} {dataString}";
+        Console.WriteLine(formattedMessage);
         
         Task.Run(async () =>
         {
