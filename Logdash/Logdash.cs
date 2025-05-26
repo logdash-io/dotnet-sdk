@@ -7,6 +7,8 @@ namespace Logdash;
 
 public class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash
 {
+    private int _sequenceNumber = 0;
+    
     public void SetMetric(string key, double value)
     {
         if (initializationParams.Verbose)
@@ -58,7 +60,7 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
 
         var dataString = string.Join(" ", formattedItems);
         
-        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, DateTime.UtcNow.ToString("o")), JsonSerializerOptions.Web);
+        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, DateTime.UtcNow.ToString("o"), _sequenceNumber++), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         
         Task.Run(async () =>

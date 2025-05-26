@@ -16,6 +16,8 @@ logdash.Log(LogLevel.Http, "This is http message");
 logdash.Log(LogLevel.Silly, "This is silly message");
 logdash.Log(LogLevel.Warn, "This is warn message");
 
+logdash.Log(LogLevel.Info, "Hello", "From", "LogDash");
+
 logdash.SetMetric("key", 2);
 logdash.MutateMetric("key", 3);
 

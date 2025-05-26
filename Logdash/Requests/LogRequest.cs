@@ -2,4 +2,4 @@
 
 namespace Logdash.Requests;
 
-public record LogRequest(string Message, LogLevel Level, string CreatedAt);
+public record LogRequest(string Message, LogLevel Level, string CreatedAt, int SequenceNumber);
