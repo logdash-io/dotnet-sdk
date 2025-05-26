@@ -71,13 +71,6 @@ logdash.SetMetric("key", 2);
 logdash.MutateMetric("key", 3);
 ```
 
-## View
-
-To see the logs or metrics, go to your project dashboard
-
-![logs](docs/logs.png)
-![delta](docs/delta.png)
-
 ## Configuration
 
 | Parameter | Required | Default | Description                                                                                                              |
