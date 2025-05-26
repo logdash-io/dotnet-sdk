@@ -11,6 +11,7 @@
     <PropertyGroup>
         <PackageId>Logdash</PackageId>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageProjectUrl>https://github.com/logdash-io/dotnet-sdk</PackageProjectUrl>
         <RepositoryUrl>https://github.com/logdash-io/dotnet-sdk</RepositoryUrl>
         <Authors>JakubK</Authors>
@@ -23,4 +24,7 @@
       <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-preview.4.25258.110" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
 </Project>

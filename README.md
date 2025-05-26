@@ -1,1 +1,99 @@
-Bootstrap
+# logdash - .NET SDK
+
+Logdash is a zero-config observability platform. This package serves an javascript interface to use it.
+
+## Pre-requisites
+
+Setup your free project in less than 2 minutes at [logdash.io](https://logdash.io/)
+
+## Installation
+
+```
+dotnet add package Logdash
+```
+
+## Setup
+
+There are 2 ways to register Logdash depending on use-case. The most common one is for AspNetCore using it's Dependency Injection.
+You can consult Example programs attached to this repo, or continue reading for quick recap.
+
+### Setup - AspNetCore
+
+```csharp
+using Logdash;
+using Logdash.Models;
+
+builder.Services.AddLogdash(new InitializationParams("INSERT_API_KEY"));
+```
+
+Now you can receive your Logdash in Controllers or Services via DI:
+
+```csharp
+public class InfoController(ILogdash logdash) : ControllerBase
+{
+    /// ...
+}
+```
+
+### Setup - Without AspNetCore DI
+```csharp
+using Logdash;
+using Logdash.Models;
+
+var builder = new LogdashBuilder();
+var logdash = builder.WithHttpClient(new HttpClient())
+    .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
+    .Build();
+```
+
+## Logging and Metrics
+
+After you're done with the setup, you can start logging or using metrics using Logdash
+
+### Logging
+
+```csharp
+logdash.Log(LogLevel.Debug, "This is a debug message");
+logdash.Log(LogLevel.Error, "This is an error message");
+logdash.Log(LogLevel.Info, "This is info message");
+logdash.Log(LogLevel.Verbose, "This is verbose message");
+logdash.Log(LogLevel.Http, "This is http message");
+logdash.Log(LogLevel.Silly, "This is silly message");
+logdash.Log(LogLevel.Warn, "This is warn message");
+
+logdash.Log(LogLevel.Info, "Hello", "From", "LogDash");
+```
+
+### Metrics
+
+```csharp
+logdash.SetMetric("key", 2);
+logdash.MutateMetric("key", 3);
+```
+
+## View
+
+To see the logs or metrics, go to your project dashboard
+
+![logs](docs/logs.png)
+![delta](docs/delta.png)
+
+## Configuration
+
+| Parameter | Required | Default | Description                                                                                                              |
+| --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `apiKey`  | no       | -       | Api key used to authorize against logdash servers. If you don't provide one, logs will be logged into local console only |
+| `host`    | no       | -       | Custom API host, useful with self-hosted instances                                                                       |
+| `verbose` | no       | -       | Useful for debugging purposes                                                                                            |
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## Support
+
+If you encounter any issues, please open an issue on GitHub or let us know at [contact@logdash.io](mailto:contact@logdash.io).
