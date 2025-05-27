@@ -70,7 +70,7 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         var datePrefix = createdAt.WithColor(156, 156, 156);
         var coloredLevel = level.ToString().ToUpper().WithColor(r, g, b);
 
-        var formattedMessage = $"{datePrefix} {coloredLevel} {dataString}";
+        var formattedMessage = $"[{datePrefix}] {coloredLevel} {dataString}";
         Console.WriteLine(formattedMessage);
         
         Task.Run(async () =>
