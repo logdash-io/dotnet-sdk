@@ -1,7 +1,7 @@
 using Logdash;
 using Logdash.Models;
 
-Console.WriteLine("=== LogDash SDK Demo ===");
+Console.WriteLine("=== logdash SDK package check ===");
 
 // Get LogDash package version
 var version = typeof(LogdashBuilder).Assembly.GetName().Version?.ToString() ?? "unknown";
