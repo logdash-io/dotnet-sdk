@@ -1,10 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
 COPY *.csproj ./
-RUN dotnet restore ./BipMobilityAPI.csproj
-# Copy everything else and build
+RUN dotnet restore ./Logdash.Check.csproj
+RUN dotnet add package Logdash
+
 COPY . .
 RUN dotnet publish -c Release -o out
 

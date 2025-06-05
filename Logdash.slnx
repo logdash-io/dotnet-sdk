@@ -7,6 +7,7 @@
     <File Path=".gitignore"/>
     <File Path="README.md"/>
     <File Path=".github/workflows/logdash-nuget.yml"/>
+    <File Path=".github/workflows/check-deployed-package.yml"/>
     <File Path="check-deployed-package/Dockerfile"/>
     <File Path="check-deployed-package/run.sh"/>
   </Folder>
