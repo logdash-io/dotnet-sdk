@@ -29,7 +29,7 @@ builder.Services.AddLogdash(new InitializationParams("INSERT_API_KEY"));
 Now you can receive your Logdash in Controllers or Services via DI:
 
 ```csharp
-public class InfoService(ILogdash logdash)
+public class InfoService(ILogdash logdash, ILogdashMetrics metrics)
 {
     /// ...
 }
@@ -41,7 +41,7 @@ using Logdash;
 using Logdash.Models;
 
 var builder = new LogdashBuilder();
-var logdash = builder.WithHttpClient(new HttpClient())
+var (logdash, metrics) = builder.WithHttpClient(new HttpClient())
     .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
     .Build();
 ```
@@ -53,22 +53,22 @@ After you're done with the setup, you can start logging or using metrics using L
 ### Logging
 
 ```csharp
-logdash.Log(LogLevel.Debug, "This is a debug message");
-logdash.Log(LogLevel.Error, "This is an error message");
-logdash.Log(LogLevel.Info, "This is info message");
-logdash.Log(LogLevel.Verbose, "This is verbose message");
-logdash.Log(LogLevel.Http, "This is http message");
-logdash.Log(LogLevel.Silly, "This is silly message");
-logdash.Log(LogLevel.Warn, "This is warn message");
+logdash.Debug("This is a debug message");
+logdash.Error("This is an error message");
+logdash.Info("This is info message");
+logdash.Verbose("This is verbose message");
+logdash.Http("This is http message");
+logdash.Silly("This is silly message");
+logdash.Warn("This is warn message");
 
-logdash.Log(LogLevel.Info, "Hello", "From", "LogDash");
+logdash.Info("Hello", "From", "LogDash");
 ```
 
 ### Metrics
 
 ```csharp
-logdash.SetMetric("key", 2);
-logdash.MutateMetric("key", 3);
+metrics.SetMetric("key", 2);
+metrics.MutateMetric("key", 3);
 ```
 
 ## Configuration
