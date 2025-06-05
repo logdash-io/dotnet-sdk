@@ -7,11 +7,11 @@ using Logdash.Requests;
 
 namespace Logdash;
 
-internal class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash, ILogdashMetrics
+internal class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdashLogger, ILogdashMetrics
 {
     private int _sequenceNumber;
     
-    public void SetMetric(string key, double value)
+    public void Set(string key, double value)
     {
         if (initializationParams.Verbose)
         {
@@ -24,7 +24,7 @@ internal class Logdash(HttpClient httpClient, InitializationParams initializatio
         Task.Run(async () => await httpClient.PutAsync("/metrics", content));
     }
 
-    public void MutateMetric(string key, double value)
+    public void Mutate(string key, double value)
     {
         if (initializationParams.Verbose)
         {

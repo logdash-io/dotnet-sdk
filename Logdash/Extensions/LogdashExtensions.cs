@@ -18,7 +18,7 @@ public static class LogdashExtensions
             x.BaseAddress = new Uri(requiredParams.Host!);
             x.DefaultRequestHeaders.Add("project-api-key", requiredParams.ApiKey);
         })
-            .AddTypedClient<ILogdash>((_, provider) => provider.GetRequiredService<Logdash>())
+            .AddTypedClient<ILogdashLogger>((_, provider) => provider.GetRequiredService<Logdash>())
             .AddTypedClient<ILogdashMetrics>((_, provider) => provider.GetRequiredService<Logdash>());
 
         return serviceCollection;

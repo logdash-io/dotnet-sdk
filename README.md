@@ -29,7 +29,7 @@ builder.Services.AddLogdash(new InitializationParams("INSERT_API_KEY"));
 Now you can receive your Logdash in Controllers or Services via DI:
 
 ```csharp
-public class InfoService(ILogdash logdash, ILogdashMetrics metrics)
+public class InfoService(ILogdashLogger logdash, ILogdashMetrics metrics)
 {
     /// ...
 }
@@ -67,8 +67,8 @@ logdash.Info("Hello", "From", "LogDash");
 ### Metrics
 
 ```csharp
-metrics.SetMetric("key", 2);
-metrics.MutateMetric("key", 3);
+metrics.Set("key", 2);
+metrics.Mutate("key", 3);
 ```
 
 ## Configuration

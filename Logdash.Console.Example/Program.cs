@@ -18,7 +18,7 @@ logdash.Warn("This is warn message");
 
 logdash.Info("Hello", "From", "LogDash");
 
-metrics.SetMetric("key", 2);
-metrics.MutateMetric("key", 3);
+metrics.Set("key", 2);
+metrics.Mutate("key", 3);
 
 await Task.Delay(5000);

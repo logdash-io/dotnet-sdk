@@ -1,6 +1,6 @@
 ﻿namespace Logdash;
 
-public interface ILogdash
+public interface ILogdashLogger
 {
     void Debug(params object[] data);
     void Error(params object[] data);

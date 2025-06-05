@@ -2,6 +2,6 @@
 
 public interface ILogdashMetrics
 {
-    void SetMetric(string key, double value);
-    void MutateMetric(string key, double value);
+    void Set(string key, double value);
+    void Mutate(string key, double value);
 }
