@@ -4,7 +4,7 @@ using Logdash.Models;
 
 namespace Logdash.Converters;
 
-public class LogLevelConverter : JsonConverter<LogLevel>
+internal class LogLevelConverter : JsonConverter<LogLevel>
 {
     public override LogLevel? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => new(reader.GetString()!); // Or match against known instances

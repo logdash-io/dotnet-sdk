@@ -4,7 +4,7 @@ using Logdash.Converters;
 namespace Logdash.Models;
 
 [JsonConverter(typeof(LogLevelConverter))]
-public sealed class LogLevel(string value)
+internal sealed class LogLevel(string value)
 {
     private string Value { get; } = value;
 

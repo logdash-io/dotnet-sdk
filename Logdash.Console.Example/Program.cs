@@ -8,15 +8,15 @@ var logdash = builder.WithHttpClient(new HttpClient())
     .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
     .Build();
 
-logdash.Log(LogLevel.Debug, "This is a debug message");
-logdash.Log(LogLevel.Error, "This is an error message");
-logdash.Log(LogLevel.Info, "This is info message");
-logdash.Log(LogLevel.Verbose, "This is verbose message");
-logdash.Log(LogLevel.Http, "This is http message");
-logdash.Log(LogLevel.Silly, "This is silly message");
-logdash.Log(LogLevel.Warn, "This is warn message");
+logdash.Debug("This is a debug message");
+logdash.Error("This is an error message");
+logdash.Info("This is info message");
+logdash.Verbose("This is verbose message");
+logdash.Http("This is http message");
+logdash.Silly("This is silly message");
+logdash.Warn("This is warn message");
 
-logdash.Log(LogLevel.Info, "Hello", "From", "LogDash");
+logdash.Info("Hello", "From", "LogDash");
 
 logdash.SetMetric("key", 2);
 logdash.MutateMetric("key", 3);

@@ -9,7 +9,7 @@ namespace Logdash;
 
 public class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash
 {
-    private int _sequenceNumber = 0;
+    private int _sequenceNumber;
     
     public void SetMetric(string key, double value)
     {
@@ -37,7 +37,15 @@ public class Logdash(HttpClient httpClient, InitializationParams initializationP
         Task.Run(async () => await httpClient.PutAsync("/metrics", content));
     }
 
-    public void Log(LogLevel level, params object[] data)
+    public void Debug(params object[] data) => Log(LogLevel.Debug, data);
+    public void Error(params object[] data) => Log(LogLevel.Error, data);
+    public void Info(params object[] data) => Log(LogLevel.Info, data);
+    public void Verbose(params object[] data) => Log(LogLevel.Verbose, data);
+    public void Http(params object[] data) => Log(LogLevel.Http, data);
+    public void Silly(params object[] data) => Log(LogLevel.Silly, data);
+    public void Warn(params object[] data) => Log(LogLevel.Warn, data);
+
+    private void Log(LogLevel level, params object[] data)
     {
         var formattedItems = new List<string>();
         foreach (var item in data)
