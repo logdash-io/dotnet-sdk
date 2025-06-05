@@ -13,11 +13,13 @@ public static class LogdashExtensions
             initParams?.Verbose ?? false);
 
         serviceCollection.AddSingleton(requiredParams);
-        serviceCollection.AddHttpClient<ILogdash, Logdash>(x =>
+        serviceCollection.AddHttpClient<Logdash>(x =>
         {
             x.BaseAddress = new Uri(requiredParams.Host!);
             x.DefaultRequestHeaders.Add("project-api-key", requiredParams.ApiKey);
-        });
+        })
+            .AddTypedClient<ILogdash>((_, provider) => provider.GetRequiredService<Logdash>())
+            .AddTypedClient<ILogdashMetrics>((_, provider) => provider.GetRequiredService<Logdash>());
 
         return serviceCollection;
     }

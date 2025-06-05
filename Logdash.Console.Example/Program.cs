@@ -4,7 +4,7 @@ using Logdash;
 using Logdash.Models;
 
 var builder = new LogdashBuilder();
-var logdash = builder.WithHttpClient(new HttpClient())
+var (logdash, metrics) = builder.WithHttpClient(new HttpClient())
     .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
     .Build();
 
@@ -18,7 +18,7 @@ logdash.Warn("This is warn message");
 
 logdash.Info("Hello", "From", "LogDash");
 
-logdash.SetMetric("key", 2);
-logdash.MutateMetric("key", 3);
+metrics.SetMetric("key", 2);
+metrics.MutateMetric("key", 3);
 
 await Task.Delay(5000);

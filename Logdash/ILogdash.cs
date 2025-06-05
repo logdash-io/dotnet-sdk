@@ -1,12 +1,7 @@
-﻿using Logdash.Models;
-
-namespace Logdash;
+﻿namespace Logdash;
 
 public interface ILogdash
 {
-    void SetMetric(string key, double value);
-    void MutateMetric(string key, double value);
-
     void Debug(params object[] data);
     void Error(params object[] data);
     void Info(params object[] data);

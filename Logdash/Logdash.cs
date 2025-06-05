@@ -7,7 +7,7 @@ using Logdash.Requests;
 
 namespace Logdash;
 
-public class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash
+internal class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdash, ILogdashMetrics
 {
     private int _sequenceNumber;
     
