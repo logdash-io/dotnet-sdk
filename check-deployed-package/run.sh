@@ -10,7 +10,7 @@ METRICS_SEED=$(awk 'BEGIN{srand(); print int(rand()*1000000)+1}')
 echo "Generated metrics seed: $METRICS_SEED"
 
 echo "Building LogDash demo Docker image (using published package)..."
-docker build --no-cache -t logdash-python-demo -f check-deployed-package/Dockerfile .
+docker build --no-cache -t logdash-dotnet-demo -f check-deployed-package/Dockerfile .
 
 echo
 echo "Running LogDash demo..."
@@ -21,7 +21,7 @@ docker run --rm \
   -e LOGDASH_API_KEY="${LOGDASH_API_KEY}" \
   -e LOGS_SEED="${LOGS_SEED}" \
   -e METRICS_SEED="${METRICS_SEED}" \
-  logdash-python-demo
+  logdash-dotnet-demo
 
 echo
 echo "Demo completed!" 

@@ -13,7 +13,7 @@ Console.WriteLine("Using Metrics Seed " + metricsSeed);
 
 var builder = new LogdashBuilder();
 var (logdash, metrics) = builder.WithHttpClient(new HttpClient())
-    .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
+    .WithInitializationParams(new InitializationParams(apiKey))
     .Build();
 
 logdash.Debug("This is a debug message", logsSeed);
