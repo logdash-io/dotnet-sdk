@@ -1,0 +1,10 @@
+﻿<Solution>
+  <Project Path="Logdash.AspNetCore.Example\Logdash.AspNetCore.Example.csproj" Type="Classic C#" />
+  <Project Path="Logdash.Console.Example\Logdash.Console.Example.csproj" Type="Classic C#" />
+  <Project Path="Logdash\Logdash.csproj" Type="Classic C#" />
+  <Folder Name="Related files">
+    <File Path=".gitignore"/>
+    <File Path="README.md"/>
+    <File Path=".github/workflows/logdash-nuget.yml"/>
+  </Folder>
+</Solution>
