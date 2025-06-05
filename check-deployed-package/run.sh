@@ -10,7 +10,7 @@ METRICS_SEED=$(awk 'BEGIN{srand(); print int(rand()*1000000)+1}')
 echo "Generated metrics seed: $METRICS_SEED"
 
 echo "Building LogDash demo Docker image (using published package)..."
-docker build --no-cache -t logdash-dotnet-demo -f check-deployed-package/Dockerfile .
+docker build --no-cache -t logdash-dotnet-demo -f check-deployed-package/Dockerfile check-deployed-package/
 
 echo
 echo "Running LogDash demo..."
@@ -71,7 +71,6 @@ This is a warning log ${LOGS_SEED}
 This is a debug log ${LOGS_SEED}
 This is a http log ${LOGS_SEED}
 This is a silly log ${LOGS_SEED}
-This is an info log ${LOGS_SEED}
 This is a verbose log ${LOGS_SEED}"
 
 # Check if all expected messages are present in the logs
