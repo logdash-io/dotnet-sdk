@@ -4,7 +4,7 @@ namespace Logdash.Constants;
 
 public static class LogdashConstants
 {
-    public const string LogdashApiUrl = "https://api.logdash.com";
+    public const string LogdashApiUrl = "https://api.logdash.io";
     public const bool DefaultVerbose = false;
 
     internal static readonly Dictionary<LogLevel, (int r, int g, int b)> LogColorMap = new()
