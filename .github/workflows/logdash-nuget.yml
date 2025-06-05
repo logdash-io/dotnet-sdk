@@ -18,6 +18,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+          
+      - name: Build Project
+        run: |
+          dotnet build -r Release Logdash/Logdash.csproj
+        
 
       - name: Publish to NuGet
         run: |
