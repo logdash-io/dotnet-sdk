@@ -34,5 +34,4 @@ logdash.Verbose("This is a verbose log", logsSeed);
 metrics.Set("users", int.Parse(metricsSeed));
 metrics.Mutate("users", 1);
 
-// Wait to ensure data is sent
-await Task.Delay(2000); 
+await Task.Delay(5000); 
