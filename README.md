@@ -67,7 +67,10 @@ logdash.Info("Hello", "From", "LogDash");
 ### Metrics
 
 ```csharp
+// to set absolute value
 metrics.Set("key", 2);
+
+// or increment / decrement by
 metrics.Mutate("key", 3);
 ```
 
