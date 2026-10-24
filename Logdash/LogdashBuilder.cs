@@ -34,9 +34,9 @@ public class LogdashBuilder
         return this;
     }
 
-    public (ILogdashLogger logdash, ILogdashMetrics metrics) Build()
+    public LogdashClient Build()
     {
         var logdash =  new Logdash(_httpClient!, _initializationParams!);
-        return (logdash, logdash);
+        return new LogdashClient(logdash, logdash, logdash);
     }
 }

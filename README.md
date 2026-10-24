@@ -1,6 +1,6 @@
 # logdash - .NET SDK
 
-Logdash is a zero-config observability platform. This package serves an javascript interface to use it.
+Logdash is a zero-config observability platform. This package serves a .NET interface to use it.
 
 ## Pre-requisites
 
@@ -14,13 +14,13 @@ dotnet add package Logdash
 
 ## Setup
 
-There are 2 ways to register Logdash depending on use-case. The most common one is for AspNetCore using it's Dependency Injection.
+There are 2 ways to register Logdash depending on use-case. The most common one is for AspNetCore using its Dependency Injection.
 You can consult Example programs attached to this repo, or continue reading for quick recap.
 
 ### Setup - AspNetCore
 
 ```csharp
-using Logdash;
+using Logdash.Extensions;
 using Logdash.Models;
 
 builder.Services.AddLogdash(new InitializationParams("INSERT_API_KEY"));
@@ -29,7 +29,7 @@ builder.Services.AddLogdash(new InitializationParams("INSERT_API_KEY"));
 Now you can receive your Logdash in Controllers or Services via DI:
 
 ```csharp
-public class InfoService(ILogdashLogger logdash, ILogdashMetrics metrics)
+public class InfoService(ILogdashLogger logdash, ILogdashMetrics metrics, ILogdashEvents events)
 {
     /// ...
 }
@@ -41,7 +41,7 @@ using Logdash;
 using Logdash.Models;
 
 var builder = new LogdashBuilder();
-var (logdash, metrics) = builder.WithHttpClient(new HttpClient())
+var (logdash, metrics, events) = builder.WithHttpClient(new HttpClient())
     .WithInitializationParams(new InitializationParams("INSERT_API_KEY"))
     .Build();
 ```
@@ -74,19 +74,35 @@ metrics.Set("key", 2);
 metrics.Mutate("key", 3);
 ```
 
+## Events
+
+```csharp
+events.Track("agent_run", new Dictionary<string, object>
+{
+    ["agent"] = "support",
+    ["steps"] = 4,
+    ["success"] = true,
+}, userId: user.Id);
+```
+
+Events show up in the domain's Analytics as goals, with a daily trend.
+Pass `userId` for signed-in users, so one person counts once across the website and apps.
+Without it, Logdash counts a visitor of that app that changes every day.
+Never put personal data in props.
+
 ## Configuration
 
-| Parameter | Required | Default | Description                                                                                                              |
-| --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `apiKey`  | no       | -       | Api key used to authorize against logdash servers. If you don't provide one, logs will be logged into local console only |
-| `host`    | no       | -       | Custom API host, useful with self-hosted instances                                                                       |
-| `verbose` | no       | -       | Useful for debugging purposes                                                                                            |
-| `app`     | no       | -       | Name of the app that sends the logs and metrics, see [App](#app)                                                         |
+| Parameter | Required | Default | Description                                                                                                                                   |
+| --------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`  | no       | -       | Api key used to authorize against logdash servers. If you don't provide one, logs will be logged into local console only, and nothing is sent |
+| `host`    | no       | -       | Custom API host, useful with self-hosted instances                                                                                            |
+| `verbose` | no       | -       | Useful for debugging purposes                                                                                                                 |
+| `app`     | no       | -       | Name of the app that sends the logs, metrics and events, see [App](#app)                                                                      |
 
 ### App
 
 The domain key is shared by all apps of a domain, for example a desktop app, an API and a landing page.
-The `App` setting names this one, so the dashboard can filter logs and metrics by app:
+The `App` setting names this one, so the dashboard can filter logs, metrics and events by app:
 
 ```csharp
 builder.Services.AddLogdash(new InitializationParams("INSERT_DOMAIN_KEY", App: "api"));
