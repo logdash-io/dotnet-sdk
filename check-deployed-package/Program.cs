@@ -9,6 +9,7 @@ Console.WriteLine($"Using LogDash package version: {version}");
 Console.WriteLine();
 
 var apiKey = Environment.GetEnvironmentVariable("LOGDASH_API_KEY");
+var app = Environment.GetEnvironmentVariable("LOGDASH_APP") ?? "dotnet-sdk";
 var logsSeed = Environment.GetEnvironmentVariable("LOGS_SEED") ?? "default";
 var metricsSeed = Environment.GetEnvironmentVariable("METRICS_SEED") ?? "1";
 
@@ -17,7 +18,7 @@ Console.WriteLine($"Using Metrics Seed: {metricsSeed}");
 
 var builder = new LogdashBuilder();
 var (logdash, metrics) = builder.WithHttpClient(new HttpClient())
-    .WithInitializationParams(new InitializationParams(apiKey))
+    .WithInitializationParams(new InitializationParams(apiKey, App: app))
     .Build();
 
 // Log some messages with seed appended
