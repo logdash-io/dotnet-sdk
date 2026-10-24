@@ -81,6 +81,18 @@ metrics.Mutate("key", 3);
 | `apiKey`  | no       | -       | Api key used to authorize against logdash servers. If you don't provide one, logs will be logged into local console only |
 | `host`    | no       | -       | Custom API host, useful with self-hosted instances                                                                       |
 | `verbose` | no       | -       | Useful for debugging purposes                                                                                            |
+| `app`     | no       | -       | Name of the app that sends the logs and metrics, see [App](#app)                                                         |
+
+### App
+
+The domain key is shared by all apps of a domain, for example a desktop app, an API and a landing page.
+The `App` setting names this one, so the dashboard can filter logs and metrics by app:
+
+```csharp
+builder.Services.AddLogdash(new InitializationParams("INSERT_DOMAIN_KEY", App: "api"));
+```
+
+Older service keys ignore `App`.
 
 ## License
 
