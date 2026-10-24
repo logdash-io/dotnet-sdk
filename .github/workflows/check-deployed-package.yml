@@ -13,6 +13,9 @@ on:
         description: Version to check, such as 0.1.0; empty checks the latest
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest

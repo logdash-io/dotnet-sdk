@@ -10,6 +10,9 @@ concurrency:
   # A release in progress must finish; a newer merge waits and releases after it.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -60,8 +63,8 @@ jobs:
         uses: NuGet/login@v1
         with:
           user: ${{ vars.NUGET_USER }}
-      # Fails the job on any error, including a version NuGet already has.
-      - run: dotnet nuget push "release/Logdash.$V.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+      # Fails the job on any error, including a version NuGet already has; a rerun skips it, so a failed tag can be retried.
+      - run: dotnet nuget push "release/Logdash.$V.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json ${{ github.run_attempt != '1' && '--skip-duplicate' || '' }}
         env:
           NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
       - run: gh release create "v$V" --generate-notes --target "$GITHUB_SHA"
