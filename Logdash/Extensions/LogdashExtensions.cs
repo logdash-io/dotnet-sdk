@@ -10,7 +10,8 @@ public static class LogdashExtensions
     {
         var requiredParams = new InitializationParams(initParams?.ApiKey ?? string.Empty,
             initParams?.Host ?? LogdashConstants.LogdashApiUrl,
-            initParams?.Verbose ?? false);
+            initParams?.Verbose ?? false,
+            initParams?.App);
 
         serviceCollection.AddSingleton(requiredParams);
         serviceCollection.AddHttpClient<Logdash>(x =>

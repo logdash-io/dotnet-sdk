@@ -9,6 +9,7 @@ namespace Logdash;
 
 internal class Logdash(HttpClient httpClient, InitializationParams initializationParams) : ILogdashLogger, ILogdashMetrics
 {
+    private readonly string? _app = string.IsNullOrWhiteSpace(initializationParams.App) ? null : initializationParams.App;
     private int _sequenceNumber;
     
     public void Set(string key, double value)
@@ -18,7 +19,7 @@ internal class Logdash(HttpClient httpClient, InitializationParams initializatio
             Console.WriteLine($"Setting metric {key} to {value}");
         }
         
-        var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Set), JsonSerializerOptions.Web);
+        var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Set, _app), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         
         Task.Run(async () => await httpClient.PutAsync("/metrics", content));
@@ -31,7 +32,7 @@ internal class Logdash(HttpClient httpClient, InitializationParams initializatio
             Console.WriteLine($"Mutating metric {key} to {value}");
         }
         
-        var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Change), JsonSerializerOptions.Web);
+        var json = JsonSerializer.Serialize(new MetricRequest(key, value, MetricOperation.Change, _app), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         Task.Run(async () => await httpClient.PutAsync("/metrics", content));
@@ -59,7 +60,7 @@ internal class Logdash(HttpClient httpClient, InitializationParams initializatio
                 }
                 catch
                 {
-                    formattedItems.Add(item.ToString());
+                    formattedItems.Add(item.ToString() ?? string.Empty);
                 }
             }
             else
@@ -71,7 +72,7 @@ internal class Logdash(HttpClient httpClient, InitializationParams initializatio
         var dataString = string.Join(" ", formattedItems);
 
         var createdAt = DateTime.UtcNow.ToString("o");
-        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, createdAt , _sequenceNumber++), JsonSerializerOptions.Web);
+        var json = JsonSerializer.Serialize(new LogRequest(dataString, level, createdAt , _sequenceNumber++, _app), JsonSerializerOptions.Web);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var (r,g,b) = LogdashConstants.LogColorMap[level];
