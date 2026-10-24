@@ -10,7 +10,7 @@ METRICS_SEED=$(awk 'BEGIN{srand(); print int(rand()*1000000)+1}')
 echo "Generated metrics seed: $METRICS_SEED"
 
 echo "Building LogDash demo Docker image (using published package)..."
-docker build --no-cache -t logdash-dotnet-demo -f check-deployed-package/Dockerfile check-deployed-package/
+docker build --no-cache --build-arg LOGDASH_VERSION="${LOGDASH_VERSION:-*}" -t logdash-dotnet-demo -f check-deployed-package/Dockerfile check-deployed-package/
 
 echo
 echo "Running LogDash demo..."
@@ -29,21 +29,19 @@ echo "Demo completed!"
 echo
 echo "Authenticating with LogDash API..."
 
-# Authenticate with API using the API key
-AUTH_RESPONSE=$(curl -s -X 'POST' \
-  'https://api.logdash.io/auth/api-key' \
+# The ingest key (LOGDASH_API_KEY) only sends, so reading back takes a read-only personal API key:
+# an ldp_ key with logs:read and metrics:read, restricted to the project the ingest key sends to.
+TOKEN="${LOGDASH_PERSONAL_API_KEY}"
+AUTH_RESPONSE=$(curl -s -X 'GET' \
+  'https://api.logdash.io/personal-api-keys/whoami' \
   -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d "{
-  \"apiKey\": \"${LOGDASH_API_KEY}\"
-}")
+  -H "Authorization: Bearer ${TOKEN}")
 
-# Extract token and projectId from response
-TOKEN=$(echo "$AUTH_RESPONSE" | grep -o '"token":"[^"]*"' | sed 's/"token":"\(.*\)"/\1/')
-PROJECT_ID=$(echo "$AUTH_RESPONSE" | grep -o '"projectId":"[^"]*"' | sed 's/"projectId":"\(.*\)"/\1/')
+# whoami names the one project the key may read in access.ids.
+PROJECT_ID=$(echo "$AUTH_RESPONSE" | sed -n 's/.*"ids":\["\([^"]*\)".*/\1/p')
 
 if [ -z "$TOKEN" ] || [ -z "$PROJECT_ID" ]; then
-    echo "Error: Failed to authenticate with LogDash API"
+    echo "Error: Failed to authenticate with LogDash API: LOGDASH_PERSONAL_API_KEY must be a personal API key restricted to the project"
     echo "Response: $AUTH_RESPONSE"
     exit 1
 fi
@@ -53,9 +51,9 @@ echo "Authentication successful. Project ID: $PROJECT_ID"
 echo
 echo "Fetching logs from LogDash API..."
 
-# Fetch logs from the API
+# Fetch this run's logs from the API: only messages with the seed, whatever else the project receives meanwhile
 LOGS_RESPONSE=$(curl -s -X 'GET' \
-  "https://api.logdash.io/projects/${PROJECT_ID}/logs?limit=10" \
+  "https://api.logdash.io/projects/${PROJECT_ID}/logs/v2?limit=100&searchString=${LOGS_SEED}" \
   -H 'accept: application/json' \
   -H "Authorization: Bearer ${TOKEN}")
 

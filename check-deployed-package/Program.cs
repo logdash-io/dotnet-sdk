@@ -12,7 +12,6 @@ var apiKey = Environment.GetEnvironmentVariable("LOGDASH_API_KEY");
 var logsSeed = Environment.GetEnvironmentVariable("LOGS_SEED") ?? "default";
 var metricsSeed = Environment.GetEnvironmentVariable("METRICS_SEED") ?? "1";
 
-Console.WriteLine($"Using API Key: {apiKey}");
 Console.WriteLine($"Using Logs Seed: {logsSeed}");
 Console.WriteLine($"Using Metrics Seed: {metricsSeed}");
 
@@ -30,8 +29,10 @@ logdash.Http("This is a http log", logsSeed);
 logdash.Silly("This is a silly log", logsSeed);
 logdash.Verbose("This is a verbose log", logsSeed);
 
-// Set and mutate metrics with seed
+// Set and mutate metrics with seed.
+// The SDK sends both at once and the API applies them in the order they arrive, so Mutate waits for Set to land.
 metrics.Set("users", int.Parse(metricsSeed));
+await Task.Delay(5000);
 metrics.Mutate("users", 1);
 
 await Task.Delay(10000); 

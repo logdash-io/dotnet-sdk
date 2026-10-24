@@ -4,8 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <VersionPrefix>0.0.6</VersionPrefix>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <!-- A placeholder: CI packs each release with -p:Version from scripts/version.ts, and the v<version> tags are the source of truth. -->
+        <VersionPrefix>0.0.0</VersionPrefix>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>

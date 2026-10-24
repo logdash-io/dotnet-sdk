@@ -6,10 +6,12 @@
     <RootNamespace>check_deployed_package</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- The published version to check, such as 0.1.0, which run.sh passes from LOGDASH_VERSION; the latest by default. -->
+    <LogdashVersion Condition="'$(LogdashVersion)' == ''">*</LogdashVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logdash" Version="*" />
+    <PackageReference Include="Logdash" Version="$(LogdashVersion)" />
   </ItemGroup>
 
 </Project> 
