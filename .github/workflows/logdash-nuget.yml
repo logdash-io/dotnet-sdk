@@ -21,7 +21,7 @@ jobs:
           
       - name: Build Project
         run: |
-          dotnet build -r Release Logdash/Logdash.csproj
+          dotnet build -c Release Logdash/Logdash.csproj
         
 
       - name: Publish to NuGet

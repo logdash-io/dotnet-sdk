@@ -20,7 +20,8 @@ public static class LogdashExtensions
             x.DefaultRequestHeaders.Add("project-api-key", requiredParams.ApiKey);
         })
             .AddTypedClient<ILogdashLogger>((_, provider) => provider.GetRequiredService<Logdash>())
-            .AddTypedClient<ILogdashMetrics>((_, provider) => provider.GetRequiredService<Logdash>());
+            .AddTypedClient<ILogdashMetrics>((_, provider) => provider.GetRequiredService<Logdash>())
+            .AddTypedClient<ILogdashEvents>((_, provider) => provider.GetRequiredService<Logdash>());
 
         return serviceCollection;
     }
