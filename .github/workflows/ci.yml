@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A release in progress must finish; a newer merge waits and releases after it.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: dotnet test Logdash.Tests
+      - run: node --test 'scripts/*.test.ts'
+
+  # The version the merged commits call for; empty when none of them is a feat, fix, perf, or breaking change.
+  version:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      next: ${{ steps.next.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the tags and commits since the last release
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - id: next
+        run: echo "version=$(node scripts/version.ts)" >> "$GITHUB_OUTPUT"
+
+  # Publishes the merge to NuGet, then tags it: a tag marks a version NuGet has.
+  release:
+    needs: [test, version]
+    if: needs.version.outputs.next != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write # trusted publishing: NuGet/login trades the job's OIDC token for an API key that lasts an hour
+    env:
+      V: ${{ needs.version.outputs.next }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+      - run: dotnet pack Logdash -c Release -p:Version="$V" -o release
+      - id: nuget
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+      # Fails the job on any error, including a version NuGet already has; a rerun skips it, so a failed tag can be retried.
+      - run: dotnet nuget push "release/Logdash.$V.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json ${{ github.run_attempt != '1' && '--skip-duplicate' || '' }}
+        env:
+          NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+      - run: gh release create "v$V" --generate-notes --target "$GITHUB_SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # Sends logs and metrics with the version just published, once NuGet serves it, and reads them back.
+  check-deployed-package:
+    needs: [version, release]
+    uses: ./.github/workflows/check-deployed-package.yml
+    with:
+      version: ${{ needs.version.outputs.next }}
+    secrets: inherit

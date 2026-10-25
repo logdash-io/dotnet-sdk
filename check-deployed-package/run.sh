@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# The app this SDK sends as on the shared domain
+APP=dotnet-sdk
+
 # Generate random 5-character seed
 LOGS_SEED=$(openssl rand -hex 2 | cut -c1-5)
 echo "Generated seed: $LOGS_SEED"
@@ -10,7 +13,7 @@ METRICS_SEED=$(awk 'BEGIN{srand(); print int(rand()*1000000)+1}')
 echo "Generated metrics seed: $METRICS_SEED"
 
 echo "Building LogDash demo Docker image (using published package)..."
-docker build --no-cache -t logdash-dotnet-demo -f check-deployed-package/Dockerfile check-deployed-package/
+docker build --no-cache --build-arg LOGDASH_VERSION="${LOGDASH_VERSION:-*}" -t logdash-dotnet-demo -f check-deployed-package/Dockerfile check-deployed-package/
 
 echo
 echo "Running LogDash demo..."
@@ -19,6 +22,7 @@ echo
 # Run in non-interactive mode which works everywhere
 docker run --rm \
   -e LOGDASH_API_KEY="${LOGDASH_API_KEY}" \
+  -e LOGDASH_APP="${APP}" \
   -e LOGS_SEED="${LOGS_SEED}" \
   -e METRICS_SEED="${METRICS_SEED}" \
   logdash-dotnet-demo
@@ -29,33 +33,31 @@ echo "Demo completed!"
 echo
 echo "Authenticating with LogDash API..."
 
-# Authenticate with API using the API key
-AUTH_RESPONSE=$(curl -s -X 'POST' \
-  'https://api.logdash.io/auth/api-key' \
+# The ingest key (LOGDASH_API_KEY) of the shared "SDK smoke tests" domain only sends, so reading back takes
+# a read-only personal API key: an ldp_ key with logs:read and metrics:read, restricted to that domain.
+TOKEN="${LOGDASH_PERSONAL_API_KEY}"
+AUTH_RESPONSE=$(curl -s -X 'GET' \
+  'https://api.logdash.io/personal-api-keys/whoami' \
   -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d "{
-  \"apiKey\": \"${LOGDASH_API_KEY}\"
-}")
+  -H "Authorization: Bearer ${TOKEN}")
 
-# Extract token and projectId from response
-TOKEN=$(echo "$AUTH_RESPONSE" | grep -o '"token":"[^"]*"' | sed 's/"token":"\(.*\)"/\1/')
-PROJECT_ID=$(echo "$AUTH_RESPONSE" | grep -o '"projectId":"[^"]*"' | sed 's/"projectId":"\(.*\)"/\1/')
+# whoami names the one domain the key may read: access is { kind: "clusters", ids: [domainId] }.
+DOMAIN_ID=$(echo "$AUTH_RESPONSE" | jq -r 'if .access.kind == "clusters" then .access.ids[0] // empty else empty end' 2>/dev/null || true)
 
-if [ -z "$TOKEN" ] || [ -z "$PROJECT_ID" ]; then
-    echo "Error: Failed to authenticate with LogDash API"
+if [ -z "$TOKEN" ] || [ -z "$DOMAIN_ID" ]; then
+    echo "Error: Failed to authenticate with LogDash API: LOGDASH_PERSONAL_API_KEY must be a personal API key restricted to the SDK smoke tests domain"
     echo "Response: $AUTH_RESPONSE"
     exit 1
 fi
 
-echo "Authentication successful. Project ID: $PROJECT_ID"
+echo "Authentication successful. Domain ID: $DOMAIN_ID"
 
 echo
 echo "Fetching logs from LogDash API..."
 
-# Fetch logs from the API
+# Fetch this run's logs from this SDK's app: only messages with the seed, whatever else the domain receives meanwhile
 LOGS_RESPONSE=$(curl -s -X 'GET' \
-  "https://api.logdash.io/projects/${PROJECT_ID}/logs?limit=10" \
+  "https://api.logdash.io/clusters/${DOMAIN_ID}/logs?apps=${APP}&limit=100&searchString=${LOGS_SEED}" \
   -H 'accept: application/json' \
   -H "Authorization: Bearer ${TOKEN}")
 
@@ -88,7 +90,7 @@ echo "Fetching metrics from LogDash API..."
 
 # Fetch metrics from the API
 METRICS_RESPONSE=$(curl -s -X 'GET' \
-  "https://api.logdash.io/projects/${PROJECT_ID}/metrics" \
+  "https://api.logdash.io/clusters/${DOMAIN_ID}/metrics" \
   -H 'accept: application/json' \
   -H "Authorization: Bearer ${TOKEN}")
 
@@ -100,15 +102,14 @@ echo "Validating metrics..."
 # Expected users metric value (metrics_seed + 1)
 EXPECTED_USERS_VALUE=$((METRICS_SEED + 1))
 
-# Check if users metric exists with correct value
-if ! echo "$METRICS_RESPONSE" | grep -q '"name":"users"'; then
-    echo "Error: Users metric not found"
+# Each metric names its app, so take this SDK's users metric
+USERS_VALUE=$(echo "$METRICS_RESPONSE" | jq -r --arg app "$APP" '.[] | select(.app == $app and .name == "users") | .value' 2>/dev/null || true)
+
+if [ -z "$USERS_VALUE" ]; then
+    echo "Error: Users metric of app $APP not found"
     echo "Metrics response: $METRICS_RESPONSE"
     exit 1
 fi
-
-# Extract the value of the users metric and check if it matches expected value
-USERS_VALUE=$(echo "$METRICS_RESPONSE" | sed 's/},{/}\n{/g' | grep '"name":"users"' | grep -o '"value":[0-9]*' | sed 's/"value"://')
 
 if [ "$USERS_VALUE" != "$EXPECTED_USERS_VALUE" ]; then
     echo "Error: Users metric value mismatch. Expected: $EXPECTED_USERS_VALUE, Found: $USERS_VALUE"
